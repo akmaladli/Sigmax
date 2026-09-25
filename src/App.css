@@ -101,6 +101,20 @@ h2 {
   font-size: clamp(1.1rem, 2vw, 1.5rem);
 }
 
+.results-summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.82);
+  border: 1px solid rgba(244, 201, 93, 0.45);
+  color: #f8fafc;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.14);
+}
+
 .favourites-page h2 {
   display: inline-block;
   margin: 10px auto 18px;

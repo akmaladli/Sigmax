@@ -98,6 +98,14 @@ function App() {
       {loading && <h2>Loading...</h2>}
       {error && <h2>{error}</h2>}
 
+      {!loading && !error && query.trim() && (
+        <div className="results-summary">
+          <span>
+            {movies.length} movie{movies.length === 1 ? "" : "s"} displayed
+          </span>
+        </div>
+      )}
+
       <div className="movie-list">
         {movies.map((movie) => {
           const fav = isFavourite(movie);
