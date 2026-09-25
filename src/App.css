@@ -101,6 +101,17 @@ h2 {
   font-size: clamp(1.1rem, 2vw, 1.5rem);
 }
 
+.favourites-page h2 {
+  display: inline-block;
+  margin: 10px auto 18px;
+  padding: 10px 22px;
+  background: #f4c95d;
+  border: 1px solid #f4c95d;
+  border-radius: 999px;
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.15);
+  color: #111827;
+}
+
 .movie-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
