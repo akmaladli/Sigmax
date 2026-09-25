@@ -1,166 +1,198 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import AddFavourite from "./components/AddFavourites";
+import RemoveFavourites from "./components/RemoveFavourites";
 import "./App.css";
 
 function App() {
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [favourites, setFavourites] = useState(() => {
+    try {
+      const saved = localStorage.getItem("sigmax-favourites");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [activePage, setActivePage] = useState("home");
+
+  const API_KEY = "1afe58e3";
 
   useEffect(() => {
-    let isMounted = true;
+    localStorage.setItem("sigmax-favourites", JSON.stringify(favourites));
+  }, [favourites]);
 
-    const fetchMovies = async () => {
-      setIsLoading(true);
-      setError("");
+  useEffect(() => {
+    const searchMovies = async (movieTitle) => {
+      if (!movieTitle) {
+        setMovies([]);
+        setError("");
+        return;
+      }
+
+      setLoading(true);
 
       try {
         const response = await fetch(
-          "https://api.sampleapis.com/movies/classic",
+          `https://www.omdbapi.com/?apikey=${API_KEY}&s=${movieTitle}`,
         );
-
-        if (!response.ok) {
-          throw new Error("The catalog could not be loaded right now.");
-        }
-
         const data = await response.json();
 
-        if (!Array.isArray(data)) {
-          throw new Error(
-            "The movie catalog is unavailable in the expected format.",
-          );
-        }
+        const filteredMovies = data.Search?.filter((movie) =>
+          movie.Title.toLowerCase().includes(movieTitle.toLowerCase()),
+        );
 
-        if (isMounted) {
-          setMovies(data);
+        if (filteredMovies.length === 0) {
+          setMovies([]);
+          setError("No movies found.");
+        } else {
+          setMovies(filteredMovies);
+          setError("");
         }
-      } catch (loadError) {
-        if (isMounted) {
-          setError(
-            loadError.message || "Something went wrong while loading movies.",
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+      } catch {
+        setError("An error occurred while fetching movies.");
       }
+
+      setLoading(false);
     };
 
-    fetchMovies();
+    searchMovies(query);
+  }, [query]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const isFavourite = (movie) =>
+    favourites.some(
+      (item) => (item.imdbID || item.Title) === (movie.imdbID || movie.Title),
+    );
 
-  const normalizedSearch = searchTerm.trim().toLowerCase();
-  const filteredMovies = movies.filter((movie) => {
-    const title = (movie.title || "Untitled film").toLowerCase();
-    return title.includes(normalizedSearch);
-  });
+  const toggleFavourite = (movie) => {
+    const movieKey = movie.imdbID || movie.Title;
+
+    setFavourites((currentFavourites) => {
+      const exists = currentFavourites.some(
+        (item) => (item.imdbID || item.Title) === movieKey,
+      );
+
+      if (exists) {
+        return currentFavourites.filter(
+          (item) => (item.imdbID || item.Title) !== movieKey,
+        );
+      }
+
+      return [...currentFavourites, movie];
+    });
+  };
+
+  const renderHomePage = () => (
+    <>
+      <div className="search-wrap">
+        <input
+          type="text"
+          placeholder="Type in movie title"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
+
+      {loading && <h2>Loading...</h2>}
+      {error && <h2>{error}</h2>}
+
+      <div className="movie-list">
+        {movies.map((movie) => {
+          const fav = isFavourite(movie);
+
+          return (
+            <div className="card" key={movie.imdbID || movie.Title}>
+              <img
+                src={
+                  movie.Poster && movie.Poster !== "N/A"
+                    ? movie.Poster
+                    : "https://via.placeholder.com/250x350?text=No+Image"
+                }
+                alt={movie.Title}
+              />
+              <h3>{movie.Title}</h3>
+
+              <div className="card-actions">
+                {fav ? (
+                  <RemoveFavourites
+                    movie={movie}
+                    onClick={() => toggleFavourite(movie)}
+                  />
+                ) : (
+                  <AddFavourite
+                    movie={movie}
+                    onClick={() => toggleFavourite(movie)}
+                  />
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+
+  const renderFavouritesPage = () => (
+    <div className="favourites-page">
+      <h2>Your Favourites</h2>
+
+      {favourites.length === 0 ? (
+        <p className="empty-state">No favourite movies yet.</p>
+      ) : (
+        <div className="movie-list">
+          {favourites.map((movie) => (
+            <div className="card" key={movie.imdbID || movie.Title}>
+              <img
+                src={
+                  movie.Poster && movie.Poster !== "N/A"
+                    ? movie.Poster
+                    : "https://via.placeholder.com/250x350?text=No+Image"
+                }
+                alt={movie.Title}
+              />
+              <h3>{movie.Title}</h3>
+
+              <div className="card-actions">
+                <RemoveFavourites
+                  movie={movie}
+                  onClick={() => toggleFavourite(movie)}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div className="app-shell">
-      <header className="topbar">
-        <div className="brand-block">
-          <p className="eyebrow">Curated classics</p>
-          <h1>Sigmax</h1>
-        </div>
+    <div className="container">
+      <div className="top-bar">
+        <img src="/sigmax.jpg" alt="Sigmax logo" className="app-logo" />
+      </div>
 
-        <div className="header-controls">
-          <label className="search-field" htmlFor="movie-search">
-            <span>Search</span>
-            <input
-              id="movie-search"
-              type="text"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search by title..."
-              aria-label="Search movies by title"
-            />
-          </label>
+      <nav className="nav-bar" aria-label="Main navigation">
+        <button
+          type="button"
+          className={activePage === "home" ? "nav-button active" : "nav-button"}
+          onClick={() => setActivePage("home")}
+        >
+          Home
+        </button>
+        <button
+          type="button"
+          className={
+            activePage === "favourites" ? "nav-button active" : "nav-button"
+          }
+          onClick={() => setActivePage("favourites")}
+        >
+          Favourites
+        </button>
+      </nav>
 
-          <span className="collection-count">
-            {filteredMovies.length} titles
-          </span>
-        </div>
-      </header>
-
-      {isLoading && (
-        <div className="status-card loading" role="status">
-          Loading movie collection...
-        </div>
-      )}
-
-      {error && (
-        <div className="status-card error" role="alert">
-          {error}
-        </div>
-      )}
-
-      {!isLoading && !error && movies.length === 0 && (
-        <div className="status-card empty">No movies available right now.</div>
-      )}
-
-      {!isLoading &&
-        !error &&
-        movies.length > 0 &&
-        filteredMovies.length === 0 && (
-          <div className="status-card empty">
-            No movies match “{searchTerm}”.
-          </div>
-        )}
-
-      {!isLoading && !error && filteredMovies.length > 0 && (
-        <main className="movie-grid">
-          {filteredMovies.map((movie, index) => {
-            const posterUrl =
-              movie.posterURL || movie.posterUrl || movie.poster || movie.image;
-            const title = movie.title || "Untitled film";
-            const year = movie.year || movie.releaseYear || "Unknown year";
-
-            return (
-              <article className="movie-card" key={`${title}-${index}`}>
-                {posterUrl ? (
-                  <>
-                    <img
-                      src={posterUrl}
-                      alt={`${title} poster`}
-                      className="movie-poster"
-                      onError={(event) => {
-                        event.currentTarget.style.display = "none";
-                        const fallback = event.currentTarget.nextElementSibling;
-                        if (fallback) {
-                          fallback.style.display = "flex";
-                        }
-                      }}
-                    />
-                    <div
-                      className="poster-fallback"
-                      aria-label={`${title} poster unavailable`}
-                    >
-                      No poster available
-                    </div>
-                  </>
-                ) : (
-                  <div
-                    className="poster-fallback visible"
-                    aria-label={`${title} poster unavailable`}
-                  >
-                    No poster available
-                  </div>
-                )}
-
-                <div className="movie-details">
-                  <h2>{title}</h2>
-                  <p>{year}</p>
-                </div>
-              </article>
-            );
-          })}
-        </main>
-      )}
+      {activePage === "home" ? renderHomePage() : renderFavouritesPage()}
     </div>
   );
 }
