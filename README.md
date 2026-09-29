@@ -36,5 +36,6 @@ It allows users to search for movies in real time, view details and posters, and
 - JavaScript
 - CSS3
 - OMDb API
-- Vitest / Testing Library _(if implemented)_
 - ESLint
+- useState
+- useEffect
