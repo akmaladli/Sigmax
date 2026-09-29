@@ -1,16 +1,40 @@
-# React + Vite
+# Sigmax | Movie Browser
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sigmax is a responsive movie search and tracking application powered by the OMDb API.
 
-Currently, two official plugins are available:
+It allows users to search for movies in real time, view details and posters, and manage a custom list of personal favourites that persists across browser sessions using local storage.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## System Preview
 
-## React Compiler
+### Home Page
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![Home Page](./public/sigmaxhomepage.png)
 
-## Expanding the ESLint configuration
+### Favourites Page
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+![Favourites Page](./public/sigmaxfavourites.png)
+
+## Live Demo
+
+- Ctrl + click link
+- <a href="https://sigmax-one.vercel.app/" target="_blank" rel="noopener noreferrer">Click <u>Here</u> for live demo.</a>
+
+## Features
+
+- **Real-Time Movie Search**: Instant movie fetching via the OMDb API.
+- **Title Filtering**: Automatic query matching to deliver accurate search results.
+- **Favourites Management**: Easily add or remove movies from your personal collection.
+- **Persistent Storage**: Saved favourites persist across sessions using `localStorage`.
+- **Dynamic Views**: Tabbed navigation switching seamlessly between Search Results and Favourites.
+- **Fallback Handling**: Safe poster fallbacks for missing images and graceful error messaging for invalid searches.
+- **Accessible UI**: Interactive buttons equipped with custom `aria-label` attributes for accessibility.
+
+## Tech Stack
+
+- React
+- Vite
+- JavaScript
+- CSS3
+- OMDb API
+- Vitest / Testing Library _(if implemented)_
+- ESLint
