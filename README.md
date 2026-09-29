@@ -27,7 +27,6 @@ It allows users to search for movies in real time, view details and posters, and
 - **Persistent Storage**: Saved favourites persist across sessions using `localStorage`.
 - **Dynamic Views**: Tabbed navigation switching seamlessly between Search Results and Favourites.
 - **Fallback Handling**: Safe poster fallbacks for missing images and graceful error messaging for invalid searches.
-- **Accessible UI**: Interactive buttons equipped with custom `aria-label` attributes for accessibility.
 
 ## Tech Stack
 
