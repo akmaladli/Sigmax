@@ -12,7 +12,7 @@ It allows users to search for movies in real time, view details and posters, and
 
 ### Favourites Page
 
-![Favourites Page](./public/sigmaxfavourites.png)
+![Favourites Page](./public/sigmaxfavouritespage.png)
 
 ## Live Demo
 
